@@ -30,7 +30,18 @@ void ParcelTrees::insert(Parcel* parcel)
 
 
 // ================= BST FUNCTIONS =================
+int ParcelTrees::getBSTHeight(BSTNode* root)
+{
+    if (root == nullptr)
+    {
+        return 0;
+    }
 
+    int leftHeight = getBSTHeight(root->left);
+    int rightHeight = getBSTHeight(root->right);
+
+    return 1 + maxValue(leftHeight, rightHeight);
+}
 // Insert into BST
 ParcelTrees::BSTNode* ParcelTrees::insertBST(
     BSTNode* root, Parcel* parcel)
@@ -355,7 +366,29 @@ void ParcelTrees::deleteAVL(AVLNode* root)
 
     delete root;
 }
+void ParcelTrees::compareHeights()
+{
+    int bstHeight = getBSTHeight(bstRoot);
+    int avlHeight = getHeight(avlRoot);
 
+    cout << "\nBST VS AVL HEIGHT COMPARISON\n\n";
+
+    cout << "BST Height: " << bstHeight << endl;
+    cout << "AVL Height: " << avlHeight << endl;
+
+    if (bstHeight > avlHeight)
+    {
+        cout << "AVL Tree has a smaller height.\n";
+    }
+    else if (avlHeight > bstHeight)
+    {
+        cout << "BST has a smaller height.\n";
+    }
+    else
+    {
+        cout << "Both trees have equal heights.\n";
+    }
+}
 // Destructor
 ParcelTrees::~ParcelTrees()
 {
