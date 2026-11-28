@@ -22,6 +22,7 @@ private:
             left = nullptr;
             right = nullptr;
         }
+
     };
 
     // AVL Node
@@ -49,6 +50,7 @@ private:
     BSTNode* searchBSTNode(BSTNode* root, string trackingID);
     void displayBSTInOrder(BSTNode* root);
     void deleteBST(BSTNode* root);
+    int getBSTHeight(BSTNode* root);
 
     // AVL Functions
     AVLNode* insertAVL(AVLNode* root, Parcel* parcel);
@@ -75,7 +77,7 @@ public:
 
     void displayBST();
     void displayAVL();
-
+    void compareHeights();
     ~ParcelTrees();
 };
 
