@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "UrgentHeap.h"
 
@@ -46,9 +45,15 @@ bool UrgentHeap::hasHigherPriority(int first, int second)
     return false;
 }
 
+
 void UrgentHeap::insert(Parcel* parcel)
 {
-    if (isFull())
+    insert(parcel, nextArrivalOrder);
+}
+
+void UrgentHeap::insert(Parcel* parcel, int arrivalOrder)
+{
+    if (parcel == NULL || isFull())
     {
         cout << "Urgent delivery heap is full.\n";
         return;
@@ -57,14 +62,14 @@ void UrgentHeap::insert(Parcel* parcel)
     int index = size;
 
     heap[index].parcel = parcel;
-    heap[index].arrivalOrder = nextArrivalOrder;
+    heap[index].arrivalOrder = arrivalOrder;
 
     size++;
-    nextArrivalOrder++;
+
+    if (arrivalOrder >= nextArrivalOrder)
+        nextArrivalOrder = arrivalOrder + 1;
 
     heapifyUp(index);
-
-    cout << "Parcel added to urgent delivery schedule.\n";
 }
 
 void UrgentHeap::heapifyUp(int index)
@@ -88,7 +93,39 @@ void UrgentHeap::heapifyUp(int index)
     }
 }
 
+
+void UrgentHeap::heapifyDown(int index)
+{
+    while (true)
+    {
+        int left = 2 * index + 1;
+        int right = 2 * index + 2;
+        int best = index;
+
+        if (left < size && hasHigherPriority(left, best))
+            best = left;
+
+        if (right < size && hasHigherPriority(right, best))
+            best = right;
+
+        if (best == index)
+            break;
+
+        HeapNode temp = heap[index];
+        heap[index] = heap[best];
+        heap[best] = temp;
+
+        index = best;
+    }
+}
+
 Parcel* UrgentHeap::extractMax()
+{
+    int arrivalOrder;
+    return extractMax(arrivalOrder);
+}
+
+Parcel* UrgentHeap::extractMax(int& arrivalOrder)
 {
     if (isEmpty())
     {
@@ -98,51 +135,56 @@ Parcel* UrgentHeap::extractMax()
 
     Parcel* removedParcel = heap[0].parcel;
 
+    arrivalOrder = heap[0].arrivalOrder;
+
     heap[0] = heap[size - 1];
+
     size--;
 
     if (!isEmpty())
-    {
         heapifyDown(0);
-    }
 
     return removedParcel;
 }
 
-void UrgentHeap::heapifyDown(int index)
+bool UrgentHeap::remove(Parcel* parcel)
 {
-    while (true)
+    if (parcel == NULL)
+        return false;
+
+    int index = -1;
+
+    for (int i = 0; i < size; i++)
     {
-        int left = 2 * index + 1;
-        int right = 2 * index + 2;
-        int highest = index;
-
-        if (left < size &&
-            hasHigherPriority(left, highest))
+        if (heap[i].parcel == parcel)
         {
-            highest = left;
-        }
-
-        if (right < size &&
-            hasHigherPriority(right, highest))
-        {
-            highest = right;
-        }
-
-        if (highest != index)
-        {
-            HeapNode temp = heap[index];
-            heap[index] = heap[highest];
-            heap[highest] = temp;
-
-            index = highest;
-        }
-        else
-        {
+            index = i;
             break;
         }
     }
+
+    if (index == -1)
+        return false;
+
+    heap[index] = heap[size - 1];
+    size--;
+
+    if (index < size)
+    {
+        if (index > 0 &&
+            hasHigherPriority(index, (index - 1) / 2))
+        {
+            heapifyUp(index);
+        }
+        else
+        {
+            heapifyDown(index);
+        }
+    }
+
+    return true;
 }
+
 
 void UrgentHeap::display()
 {

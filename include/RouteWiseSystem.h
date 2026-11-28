@@ -43,10 +43,39 @@ private:
     void markParcelDelivered();
     void registerCity();
     void addRoad();
+
+
+enum UndoAction
+{
+    ADD_NORMAL,
+    ADD_URGENT,
+    PROCESS_NORMAL,
+    PROCESS_URGENT,
+    MARK_DELIVERED
+};
+
+struct SystemUndoNode
+{
+    Parcel* parcel;
+    UndoAction action;
+    int arrivalOrder;
+    SystemUndoNode* next;
+};
+
+SystemUndoNode* systemUndoTop;
+
+void pushSystemUndo(
+    Parcel* parcel,
+    UndoAction action,
+    int arrivalOrder = -1
+);
+
+bool undoLastSystemOperation();
+
 public:
     RouteWiseSystem();
     ~RouteWiseSystem();
     void run();
 };
 
-#endif#pragma once
+#endif

@@ -29,7 +29,11 @@ public:
 
     bool isEmpty();
     bool isFull();
+bool remove(Parcel* parcel);
 
+void insert(Parcel* parcel, int arrivalOrder);
+
+Parcel* extractMax(int& arrivalOrder);
     void insert(Parcel* parcel);
     Parcel* extractMax();
 

@@ -41,6 +41,55 @@ void DeliveryQueue::enqueue(Parcel* parcel)
     cout << "Parcel added to normal delivery queue.\n";
 }
 
+
+void DeliveryQueue::enqueueFront(Parcel* parcel)
+{
+    if (parcel == NULL)
+        return;
+
+    Node* newNode = new Node;
+
+    newNode->parcel = parcel;
+    newNode->next = front;
+
+    front = newNode;
+
+    if (rear == NULL)
+        rear = newNode;
+}
+
+bool DeliveryQueue::remove(Parcel* parcel)
+{
+    if (parcel == NULL || isEmpty())
+        return false;
+
+    Node* current = front;
+    Node* previous = NULL;
+
+    while (current != NULL)
+    {
+        if (current->parcel == parcel)
+        {
+            if (previous == NULL)
+                front = current->next;
+            else
+                previous->next = current->next;
+
+            if (current == rear)
+                rear = previous;
+
+            delete current;
+
+            return true;
+        }
+
+        previous = current;
+        current = current->next;
+    }
+
+    return false;
+}
+
 Parcel* DeliveryQueue::dequeue()
 {
     if (isEmpty())

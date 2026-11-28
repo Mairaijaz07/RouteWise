@@ -1,4 +1,3 @@
-
 #include "Graph.h"
 #include <climits>
 
@@ -161,9 +160,24 @@ void Graph::addEdgeToList(int source, int destination)
     Node* newNode = new Node;
 
     newNode->vertex = destination;
-    newNode->next = adjacencyList[source];
+    newNode->next = NULL;
 
-    adjacencyList[source] = newNode;
+    // Add at the end so neighbours stay in the order roads were added
+    if (adjacencyList[source] == NULL)
+    {
+        adjacencyList[source] = newNode;
+    }
+    else
+    {
+        Node* last = adjacencyList[source];
+
+        while (last->next != NULL)
+        {
+            last = last->next;
+        }
+
+        last->next = newNode;
+    }
 }
 
 void Graph::addEdge(int source, int destination, int weight)
@@ -303,38 +317,44 @@ void Graph::DFS(int start)
 
     bool* visited = new bool[vertices];
     int* stack = new int[vertices];
+    Node** nextNeighbour = new Node*[vertices];
 
     for (int i = 0; i < vertices; i++)
     {
         visited[i] = false;
+        nextNeighbour[i] = adjacencyList[i];
     }
 
     int top = -1;
 
-    stack[++top] = start;
-    visited[start] = true;
-
     cout << "\nDFS Traversal: ";
+
+    // Visit the start city and push it on the stack
+    visited[start] = true;
+    cout << cities[start] << " ";
+    stack[++top] = start;
 
     while (top != -1)
     {
-        int current = stack[top--];
+        int current = stack[top];
+        Node* temp = nextNeighbour[current];
 
-        cout << cities[current] << " ";
-
-        Node* temp = adjacencyList[current];
-
-        while (temp != NULL)
+        if (temp == NULL)
         {
-            int neighbour = temp->vertex;
+            // All neighbours done, go back
+            top--;
+        }
+        else
+        {
+            nextNeighbour[current] = temp->next;
 
-            if (!visited[neighbour])
+            if (!visited[temp->vertex])
             {
-                visited[neighbour] = true;
-                stack[++top] = neighbour;
+                // Go deeper immediately
+                visited[temp->vertex] = true;
+                cout << cities[temp->vertex] << " ";
+                stack[++top] = temp->vertex;
             }
-
-            temp = temp->next;
         }
     }
 
@@ -342,6 +362,7 @@ void Graph::DFS(int start)
 
     delete[] visited;
     delete[] stack;
+    delete[] nextNeighbour;
 }
 
 bool Graph::isReachable(int source, int destination)

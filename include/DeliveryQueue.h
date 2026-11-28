@@ -21,7 +21,8 @@ public:
     ~DeliveryQueue();
 
     bool isEmpty();
-
+void enqueueFront(Parcel* parcel);
+bool remove(Parcel* parcel);
     void enqueue(Parcel* parcel);
     Parcel* dequeue();
 
